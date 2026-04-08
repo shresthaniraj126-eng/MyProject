@@ -1,0 +1,68 @@
+body{
+    background-color: #0a0806;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    line-height: 1.6;
+    color: #d4cfc6;
+    display: flex;
+    height: 90vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.loginSignup-form{
+    background: #0e1420;
+    border: 1px solid #ddd8d060;
+    padding: 20px 30px ;
+    border-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    width: 250px;
+}
+
+input[type="text"], input[type="password"] , input[type="email"] ,input[type="submit"] {
+    width: 90%;
+    padding: 10px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: #ddd8d060;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.116);
+    background: #0e1420;
+    color: white;
+}
+
+
+input[type="submit"] {
+    width:50%;
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.8), rgba(69, 160, 73, 0.9));
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+    opacity: 0.9;
+    border: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 20px 0px 20px 0px;
+    -webkit-backdrop-filter: blur(10px); /* Safari support */
+}
+input[type="submit"]:hover {
+    background: linear-gradient(135deg, rgba(69, 160, 73, 0.9), rgba(76, 175, 80, 0.8));
+     box-shadow: 
+    0 0 10px #00d2ff, 
+    0 0 30px #00d2ff
+    
+}
+.login-form>h1{
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#Account_Type{
+    padding: 10px;
+    border: transparent;
+    border-radius: 10px;
+    cursor: pointer;
+}
+a{
+    color: red;
+    text-decoration: none;
+}

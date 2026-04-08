@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HairDec — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #08090B;
+      --surface:    #0D0F14;
+      --surface2:   #13161D;
+      --border:     rgba(255,255,255,0.07);
+      --border2:    rgba(255,255,255,0.13);
+      --text:       #E8E4DC;
+      --muted:      #6B6860;
+      --gold:       #C9A96E;
+      --gold-dim:   rgba(201,169,110,0.15);
+      --gold-glow:  rgba(201,169,110,0.08);
+      --serif:      'Cormorant Garamond', Georgia, serif;
+      --sans:       'Jost', system-ui, sans-serif;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Ambient background orbs ── */
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(80px);
+      opacity: 0.25;
+    }
+    body::before {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #C9A96E 0%, transparent 70%);
+      top: -120px; right: -80px;
+      animation: drift1 14s ease-in-out infinite alternate;
+    }
+    body::after {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #4a6fa5 0%, transparent 70%);
+      bottom: -100px; left: -60px;
+      animation: drift2 18s ease-in-out infinite alternate;
+      opacity: 0.12;
+    }
+
+    @keyframes drift1 { from { transform: translate(0,0); } to { transform: translate(-30px, 40px); } }
+    @keyframes drift2 { from { transform: translate(0,0); } to { transform: translate(40px, -30px); } }
+
+    /* ── Noise grain overlay ── */
+    .grain {
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Card ── */
+    .card {
+      position: relative;
+      z-index: 1;
+      width: 360px;
+      background: var(--surface);
+      border: 0.5px solid var(--border2);
+      border-radius: 20px;
+      padding: 3rem 2.5rem 2.5rem;
+      animation: rise 0.7s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* subtle inner glow at top */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      border-radius: 50%;
+      opacity: 0.5;
+    }
+
+    /* ── Brand mark ── */
+    .brand {
+      text-align: center;
+      margin-bottom: 2.25rem;
+    }
+
+    .brand-scissors {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px; height: 44px;
+      background: var(--gold-dim);
+      border: 0.5px solid rgba(201,169,110,0.3);
+      border-radius: 12px;
+      margin-bottom: 0.9rem;
+      font-size: 20px;
+    }
+
+    .brand h1 {
+      font-family: var(--serif);
+      font-size: 30px;
+      font-weight: 300;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+
+    .brand h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .brand p {
+      margin-top: 0.4rem;
+      font-size: 12px;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 0.5px;
+      background: var(--border);
+      margin-bottom: 1.75rem;
+    }
+
+    /* ── Field group ── */
+    .field {
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .field label {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 12px 16px;
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text);
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      caret-color: var(--gold);
+    }
+
+    .field input::placeholder { color: var(--muted); }
+
+    .field input:focus {
+      border-color: rgba(201,169,110,0.5);
+      box-shadow: 0 0 0 3px var(--gold-glow);
+    }
+
+    /* ── Submit button ── */
+    .btn-submit {
+      width: 100%;
+      margin-top: 1.5rem;
+      padding: 13px;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #0D0F14;
+      background: var(--gold);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-submit::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0);
+      transition: background 0.2s;
+    }
+
+    .btn-submit:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(201,169,110,0.25);
+    }
+
+    .btn-submit:active {
+      transform: scale(0.98);
+    }
+
+    /* ── Footer link ── */
+    .foot {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--muted);
+    }
+
+    .foot a {
+      color: var(--gold);
+      text-decoration: none;
+      border-bottom: 0.5px solid rgba(201,169,110,0.35);
+      padding-bottom: 1px;
+      transition: opacity 0.2s;
+    }
+
+    .foot a:hover { opacity: 0.75; }
+  </style>
+</head>
+<body>
+
+  <div class="grain"></div>
+
+  <div class="card">
+
+    <div class="brand">
+      <div class="brand-scissors">✂</div>
+      <h1>Hair<em>Dec</em></h1>
+      <p>Member Login</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <form action="php/userlogin.php" method="post">
+
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Enter your username" autocomplete="username">
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+      </div>
+
+      <button type="submit" class="btn-submit">Log In</button>
+
+    </form>
+
+    <p class="foot">Don't have an account? <a href="userSignUp.html">Sign Up</a></p>
+
+  </div>
+
+</body>
+</html>

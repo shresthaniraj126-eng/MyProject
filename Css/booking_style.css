@@ -1,0 +1,31 @@
+body{
+    padding: 20px;
+    margin: 0;
+}
+
+
+.booking_seats_section input[type="radio"] {
+    display: none;
+}
+
+.material-symbols-outlined {
+  font-size: 25px;
+  color: gray;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.seat_radio:checked + .material-symbols-outlined{
+  color: green;
+  transform: scale(1.2);
+}
+
+.categories_cards {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid black;
+    width: fit-content;
+    height: 20px;
+    padding: 10px;
+}

@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HairDec — Premier Barbershop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+        --black:   #0a0806;
+        --dark:    #111009;
+        --dark2:   #1a1712;
+        --dark3:   #252117;
+        --gold:    #c9a84c;
+        --gold2:   #e8c96a;
+        --gold-dim:#7a6530;
+        --cream:   #f5f0e8;
+        --text:    #d4cfc6;
+        --muted:   #7a756c;
+        --border:  rgba(201,168,76,0.15);
+        --border2: rgba(201,168,76,0.3);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+        font-family: 'Outfit', sans-serif;
+        background: var(--black);
+        color: var(--text);
+        overflow-x: hidden;
+        
+    }
+
+    /* ── Custom cursor ── */
+    .cursor {
+        width: 8px; height: 8px;
+        background: var(--gold);
+        border-radius: 50%;
+        position: fixed; top: 0; left: 0;
+        pointer-events: none; z-index: 9999;
+        transition: transform 0.15s ease;
+    }
+    .cursor-ring {
+        width: 32px; height: 32px;
+        border: 1px solid rgba(201,168,76,0.5);
+        border-radius: 50%;
+        position: fixed; top: 0; left: 0;
+        pointer-events: none; z-index: 9998;
+        transition: transform 0.08s ease, width 0.2s, height 0.2s, opacity 0.2s;
+    }
+
+    /* ── Noise overlay ── */
+    body::before {
+        content: '';
+        position: fixed; inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+        opacity: 0.35;
+        pointer-events: none; z-index: 1;
+    }
+
+    /* ─────────────── NAVBAR ─────────────── */
+    .navbar {
+        position: fixed; top: 0; left: 0; right: 0;
+        z-index: 100;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 22px 60px;
+        transition: background 0.4s, padding 0.4s, backdrop-filter 0.4s;
+    }
+    .navbar.scrolled {
+        background: rgba(10,8,6,0.88);
+        backdrop-filter: blur(16px);
+        padding: 14px 60px;
+        border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--gold);
+        letter-spacing: 0.5px;
+        text-decoration: none;
+    }
+    .nav-logo span { color: var(--cream); font-style: italic; }
+    .nav-links {
+        display: flex; gap: 40px; list-style: none;
+    }
+    .nav-links a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.82rem;
+        font-weight: 500;
+        letter-spacing: 1.8px;
+        text-transform: uppercase;
+        transition: color 0.2s;
+        position: relative;
+    }
+    .nav-links a::after {
+        content: '';
+        position: absolute; bottom: -4px; left: 0; right: 0;
+        height: 1px; background: var(--gold);
+        transform: scaleX(0); transform-origin: left;
+        transition: transform 0.25s ease;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-cta {
+        display: flex; align-items: center; gap: 8px;
+        padding: 10px 22px;
+        background: transparent;
+        border: 1px solid var(--gold-dim);
+        border-radius: 2px;
+        color: var(--gold);
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        
+        transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .nav-cta:hover {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: var(--black);
+    }
+
+    /* ─────────────── HERO ─────────────── */
+    #home {
+        min-height: 100vh;
+        display: flex; align-items: center;
+        position: relative;
+        overflow: hidden;
+        padding: 140px 60px 80px;
+    }
+
+    /* diagonal gold line background */
+    #home::before {
+        content: '';
+        position: absolute; inset: 0;
+        background:
+            linear-gradient(135deg, transparent 60%, rgba(201,168,76,0.04) 100%),
+            repeating-linear-gradient(
+                -55deg,
+                transparent,
+                transparent 80px,
+                rgba(201,168,76,0.02) 80px,
+                rgba(201,168,76,0.02) 81px
+            );
+        pointer-events: none;
+    }
+    /* top right glow */
+    #home::after {
+        content: '';
+        position: absolute;
+        top: -100px; right: -100px;
+        width: 600px; height: 600px;
+        background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 65%);
+        pointer-events: none;
+    }
+
+    .hero-inner {
+        position: relative; z-index: 2;
+        max-width: 1200px; margin: 0 auto; width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: center;
+    }
+
+    .hero-eyebrow {
+        display: flex; align-items: center; gap: 12px;
+        font-size: 0.7rem; font-weight: 600;
+        letter-spacing: 3px; text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 24px;
+        animation: fadeUp 0.8s ease both;
+    }
+    .hero-eyebrow::before {
+        content: '';
+        width: 32px; height: 1px; background: var(--gold);
+    }
+
+    .hero-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(3rem, 5vw, 5.2rem);
+        font-weight: 900;
+        line-height: 1.0;
+        letter-spacing: -1px;
+        color: var(--cream);
+        margin-bottom: 28px;
+        animation: fadeUp 0.8s ease 0.1s both;
+    }
+    .hero-title em {
+        font-style: italic;
+        color: var(--gold);
+        display: block;
+    }
+
+    .hero-desc {
+        font-size: 1rem;
+        font-weight: 300;
+        line-height: 1.8;
+        color: var(--muted);
+        max-width: 460px;
+        margin-bottom: 44px;
+        animation: fadeUp 0.8s ease 0.2s both;
+    }
+
+    .hero-actions {
+        display: flex; gap: 16px; align-items: center;
+        animation: fadeUp 0.8s ease 0.3s both;
+    }
+
+    .btn-primary {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 15px 34px;
+        background: var(--gold);
+        color: var(--black);
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.82rem; font-weight: 700;
+        letter-spacing: 1.5px; text-transform: uppercase;
+        text-decoration: none;
+        border: none; border-radius: 2px;
+        
+        transition: background 0.2s, transform 0.15s;
+        position: relative; overflow: hidden;
+    }
+    .btn-primary::after {
+        content: '';
+        position: absolute; inset: 0;
+        background: rgba(255,255,255,0.15);
+        transform: translateX(-110%) skewX(-15deg);
+        transition: transform 0.4s ease;
+    }
+    .btn-primary:hover::after { transform: translateX(110%) skewX(-15deg); }
+    .btn-primary:hover { transform: translateY(-2px); }
+
+    .btn-ghost {
+        display: inline-flex; align-items: center; gap: 8px;
+        color: var(--muted);
+        font-size: 0.82rem; font-weight: 500;
+        letter-spacing: 0.5px;
+        text-decoration: none;
+        
+        transition: color 0.2s;
+    }
+    .btn-ghost i { font-size: 0.7rem; transition: transform 0.2s; }
+    .btn-ghost:hover { color: var(--cream); }
+    .btn-ghost:hover i { transform: translateX(4px); }
+
+    /* Hero visual side */
+    .hero-visual {
+        position: relative;
+        animation: fadeIn 1s ease 0.2s both;
+    }
+    .hero-frame {
+        position: relative;
+        border-radius: 4px;
+        overflow: hidden;
+        aspect-ratio: 4/5;
+        background: var(--dark2);
+    }
+    .hero-frame img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        display: block;
+        opacity: 0.85;
+        transition: transform 6s ease;
+    }
+    .hero-frame:hover img { transform: scale(1.04); }
+
+    /* gold corner accents */
+    .hero-frame::before,
+    .hero-frame::after {
+        content: '';
+        position: absolute;
+        width: 40px; height: 40px;
+        border-color: var(--gold);
+        border-style: solid;
+        z-index: 2;
+    }
+    .hero-frame::before { top: 16px; left: 16px; border-width: 2px 0 0 2px; }
+    .hero-frame::after  { bottom: 16px; right: 16px; border-width: 0 2px 2px 0; }
+
+    .hero-tag {
+        position: absolute;
+        bottom: -20px; left: -24px;
+        background: var(--dark3);
+        border: 1px solid var(--border2);
+        border-radius: 4px;
+        padding: 14px 20px;
+        display: flex; align-items: center; gap: 12px;
+        backdrop-filter: blur(10px);
+        z-index: 3;
+    }
+    .hero-tag-icon {
+        width: 36px; height: 36px;
+        background: var(--gold);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--black); font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+    .hero-tag-text { font-size: 0.78rem; line-height: 1.5; }
+    .hero-tag-text strong { display: block; color: var(--cream); font-weight: 600; font-size: 0.85rem; }
+    .hero-tag-text span { color: var(--muted); font-weight: 300; }
+
+    /* ─────────────── SECTION COMMON ─────────────── */
+    section { position: relative; z-index: 2; }
+
+    .section-eyebrow {
+        display: flex; align-items: center; gap: 12px;
+        font-size: 0.68rem; font-weight: 600;
+        letter-spacing: 3px; text-transform: uppercase;
+        color: var(--gold); margin-bottom: 16px;
+    }
+    .section-eyebrow::before {
+        content: ''; width: 24px; height: 1px; background: var(--gold);
+    }
+    .section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 3.5vw, 3rem);
+        font-weight: 700;
+        color: var(--cream);
+        line-height: 1.15;
+        letter-spacing: -0.5px;
+    }
+    .section-title em { font-style: italic; color: var(--gold); }
+
+    /* ─────────────── SERVICES ─────────────── */
+    #services {
+        padding: 120px 60px;
+        background: var(--dark);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+    }
+    .services-inner {
+        max-width: 1200px; margin: 0 auto;
+    }
+    .services-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: end;
+        margin-bottom: 72px;
+    }
+    .services-subtitle {
+        font-size: 0.95rem; font-weight: 300;
+        line-height: 1.8; color: var(--muted);
+        max-width: 400px;
+        align-self: end;
+        padding-bottom: 4px;
+    }
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
+    }
+    .service-card {
+        background: var(--dark2);
+        padding: 44px 36px;
+        position: relative;
+        overflow: hidden;
+        transition: background 0.3s;
+        
+    }
+    .service-card:hover { background: var(--dark3); }
+    .service-card::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+        transform: scaleX(0); transform-origin: left;
+        transition: transform 0.4s ease;
+    }
+    .service-card:hover::before { transform: scaleX(1); }
+
+    .service-number {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.5rem; font-weight: 900;
+        color: rgba(201,168,76,0.08);
+        line-height: 1;
+        margin-bottom: 20px;
+        transition: color 0.3s;
+    }
+    .service-card:hover .service-number { color: rgba(201,168,76,0.14); }
+
+    .service-icon {
+        width: 48px; height: 48px;
+        background: rgba(201,168,76,0.08);
+        border: 1px solid var(--border2);
+        border-radius: 4px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; color: var(--gold);
+        margin-bottom: 24px;
+        transition: background 0.3s;
+    }
+    .service-card:hover .service-icon { background: rgba(201,168,76,0.14); }
+
+    .service-name {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.35rem; font-weight: 700;
+        color: var(--cream);
+        margin-bottom: 12px;
+    }
+    .service-desc {
+        font-size: 0.88rem; font-weight: 300;
+        line-height: 1.75; color: var(--muted);
+    }
+    .service-arrow {
+        display: inline-flex; align-items: center; gap: 6px;
+        margin-top: 28px;
+        font-size: 0.75rem; font-weight: 600;
+        letter-spacing: 1px; text-transform: uppercase;
+        color: var(--gold-dim);
+        transition: color 0.2s, gap 0.2s;
+    }
+    .service-card:hover .service-arrow { color: var(--gold); gap: 10px; }
+
+    /* ─────────────── ABOUT ─────────────── */
+    #about {
+        padding: 120px 60px;
+        background: var(--black);
+    }
+    .about-inner {
+        max-width: 1200px; margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 100px;
+        align-items: center;
+    }
+    .about-image-wrap {
+        position: relative;
+    }
+    .about-img-main {
+        width: 100%;
+        aspect-ratio: 3/4;
+        object-fit: cover;
+        border-radius: 4px;
+        display: block;
+        background: var(--dark2);
+        opacity: 0.85;
+    }
+    .about-img-accent {
+        position: absolute;
+        bottom: -32px; right: -32px;
+        width: 55%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 4px solid var(--black);
+        background: var(--dark3);
+        opacity: 0.9;
+    }
+    /* decorative vertical line */
+    .about-image-wrap::before {
+        content: '';
+        position: absolute;
+        left: -28px; top: 40px; bottom: 40px;
+        width: 1px;
+        background: linear-gradient(to bottom, transparent, var(--gold-dim), transparent);
+    }
+    .about-content { padding-top: 8px; }
+    .about-body {
+        font-size: 1rem; font-weight: 300;
+        line-height: 1.9; color: var(--muted);
+        margin: 24px 0 40px;
+    }
+    .about-body strong { color: var(--cream); font-weight: 500; }
+    .about-stats {
+        display: grid; grid-template-columns: repeat(3, 1fr);
+        gap: 28px;
+        padding-top: 36px;
+        border-top: 1px solid var(--border);
+        margin-top: 8px;
+    }
+    .about-stat-num {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem; font-weight: 900;
+        color: var(--gold);
+        line-height: 1;
+        margin-bottom: 6px;
+    }
+    .about-stat-label {
+        font-size: 0.75rem; font-weight: 500;
+        letter-spacing: 1px; text-transform: uppercase;
+        color: var(--muted);
+    }
+
+    /* ─────────────── FOOTER ─────────────── */
+    footer {
+        background: var(--dark);
+        border-top: 1px solid var(--border);
+        padding: 60px 60px 32px;
+        position: relative; z-index: 2;
+    }
+    .footer-inner {
+        max-width: 1200px; margin: 0 auto;
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 60px;
+        padding-bottom: 48px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 28px;
+    }
+    .footer-brand-name {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem; font-weight: 900;
+        color: var(--gold);
+        margin-bottom: 14px;
+    }
+    .footer-brand-name span { color: var(--cream); font-style: italic; }
+    .footer-tagline {
+        font-size: 0.88rem; font-weight: 300;
+        line-height: 1.75; color: var(--muted);
+        max-width: 260px;
+    }
+    .footer-col h5 {
+        font-size: 0.68rem; font-weight: 600;
+        letter-spacing: 2px; text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 20px;
+    }
+    .footer-col p, .footer-col a {
+        font-size: 0.88rem; font-weight: 300;
+        color: var(--muted);
+        line-height: 2;
+        display: block;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--cream); }
+    .footer-bottom {
+        max-width: 1200px; margin: 0 auto;
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 0.78rem; color: var(--muted); font-weight: 300;
+    }
+
+    /* ─────────────── SCROLL REVEAL ─────────────── */
+    .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* ─────────────── ANIMATIONS ─────────────── */
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(24px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    /* ─────────────── RESPONSIVE ─────────────── */
+    @media (max-width: 900px) {
+        .navbar { padding: 18px 24px; }
+        .navbar.scrolled { padding: 12px 24px; }
+        .nav-links { display: none; }
+        #home { padding: 120px 24px 60px; }
+        .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+        .hero-visual { display: none; }
+        #services { padding: 80px 24px; }
+        .services-header { grid-template-columns: 1fr; gap: 16px; }
+        .services-grid { grid-template-columns: 1fr; gap: 2px; }
+        #about { padding: 80px 24px; }
+        .about-inner { grid-template-columns: 1fr; gap: 48px; }
+        .about-image-wrap { display: none; }
+        footer { padding: 48px 24px 24px; }
+        .footer-inner { grid-template-columns: 1fr; gap: 36px; }
+        .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+    }
+
+    /* ───────── UI UPGRADE PACK ───────── */
+
+/* Background upgrade */
+body {
+    background: radial-gradient(circle at top right, #1a1712, #0a0806 60%);
+}
+
+/* Progress bar */
+#progressBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--gold);
+    width: 0%;
+    z-index: 9999;
+}
+
+/* Hero highlight animation */
+.hero-title em {
+    position: relative;
+    display: inline-block;
+}
+.hero-title em::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 6px;
+    width: 100%;
+    height: 10px;
+    background: rgba(201,168,76,0.15);
+    z-index: -1;
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: highlight 1s ease 0.6s forwards;
+}
+@keyframes highlight {
+    to { transform: scaleX(1); }
+}
+
+/* Floating image */
+.hero-frame {
+    animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+/* Glass cards */
+.service-card {
+    background: rgba(255,255,255,0.02);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: transform 0.2s ease, background 0.3s;
+}
+
+/* Premium button glow */
+.btn-primary {
+    box-shadow: 0 10px 30px rgba(201,168,76,0.25);
+}
+.btn-primary:hover {
+    box-shadow: 0 15px 40px rgba(201,168,76,0.4);
+}
+
+/* Navbar hover lift */
+.nav-links a:hover {
+    transform: translateY(-2px);
+}
+
+/* Section divider glow */
+section::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    opacity: 0.2;
+    margin-top: 80px;
+}
+
+/* Page fade */
+body {
+    animation: fadeInPage 0.6s ease;
+}
+@keyframes fadeInPage {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+    </style>
+</head>
+<body>
+<div id="progressBar"></div>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar" id="navbar">
+    <a href="#home" class="nav-logo">Hair<span>Dec</span></a>
+    <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#about">About</a></li>
+    </ul>
+    <a href="userSignUp.html" class="nav-cta">
+        <i class="fa-regular fa-user"></i>
+        Sign Up
+    </a>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="home">
+    <div class="hero-inner">
+        <div class="hero-content">
+            <div class="hero-eyebrow">Premier Barbershop</div>
+            <h1 class="hero-title">
+                The Art of<br>
+                <em>the Perfect Cut</em>
+            </h1>
+            <p class="hero-desc">
+                Your one-stop destination for precision cuts, grooming, and care. Our network of skilled professionals delivers a personalised experience that leaves you confident every time.
+            </p>
+            <div class="hero-actions">
+                <a href="userSignUp.html" class="btn-primary">
+                    Book Appointment
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                <a href="#services" class="btn-ghost">
+                    Our Services
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="hero-frame">
+                <img src="images/Homepage_img.jfif" alt="HairDec barbershop">
+            </div>
+            <div class="hero-tag">
+                <div class="hero-tag-icon"><i class="fa-solid fa-scissors"></i></div>
+                <div class="hero-tag-text">
+                    <strong>Trusted by 500+ clients</strong>
+                    <span>Premium grooming since 2020</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── SERVICES ── -->
+<section id="services">
+    <div class="services-inner">
+        <div class="services-header reveal">
+            <div>
+                <div class="section-eyebrow">What We Offer</div>
+                <h2 class="section-title">Our <em>Services</em></h2>
+            </div>
+            <p class="services-subtitle">
+                Every service is crafted with precision, care, and a commitment to making you look and feel your absolute best.
+            </p>
+        </div>
+
+        <div class="services-grid">
+            <div class="service-card reveal">
+                <div class="service-number">01</div>
+                <div class="service-icon"><i class="fa-solid fa-location-dot"></i></div>
+                <div class="service-name">Local Experts</div>
+                <p class="service-desc">Barbers rooted in your community who understand your style preferences and deliver cuts that feel like home.</p>
+                <div class="service-arrow">Discover <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+            <div class="service-card reveal" style="transition-delay:0.1s">
+                <div class="service-number">02</div>
+                <div class="service-icon"><i class="fa-solid fa-star"></i></div>
+                <div class="service-name">Premium Service</div>
+                <p class="service-desc">A welcoming, personalised experience that makes every visit a pleasure — from the moment you walk in.</p>
+                <div class="service-arrow">Discover <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+            <div class="service-card reveal" style="transition-delay:0.2s">
+                <div class="service-number">03</div>
+                <div class="service-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="service-name">Safe & Clean</div>
+                <p class="service-desc">Hygiene-first standards and a pristine environment so you can relax fully during every appointment.</p>
+                <div class="service-arrow">Discover <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section id="about">
+    <div class="about-inner">
+        <div class="about-image-wrap reveal">
+            <img src="images/barberlogo.jpg" alt="HairDec barber" class="about-img-main">
+            <img src="images/homepage_img2.jpg" alt="Barbershop interior" class="about-img-accent">
+        </div>
+        <div class="about-content reveal">
+            <div class="section-eyebrow">Our Story</div>
+            <h2 class="section-title">Crafted with<br><em>Passion & Precision</em></h2>
+            <p class="about-body">
+                At <strong>HairDec</strong>, we combine style and expertise to deliver the perfect grooming experience. Our team of skilled barbers ensures every haircut, shave, and beard trim is done with precision and care.<br><br>
+                We pride ourselves on a friendly, clean environment where every client leaves looking — and feeling — their absolute best.
+            </p>
+            <a href="userSignUp.html" class="btn-primary" style="display:inline-flex;">
+                Get Started
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            <div class="about-stats">
+                <div>
+                    <div class="about-stat-num">500+</div>
+                    <div class="about-stat-label">Happy Clients</div>
+                </div>
+                <div>
+                    <div class="about-stat-num">6+</div>
+                    <div class="about-stat-label">Years Active</div>
+                </div>
+                <div>
+                    <div class="about-stat-num">20+</div>
+                    <div class="about-stat-label">Expert Barbers</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+    <div class="footer-inner">
+        <div>
+            <div class="footer-brand-name">Hair<span>Dec</span></div>
+            <p class="footer-tagline">Expert barbers. Friendly service. A clean, safe environment you can trust.</p>
+        </div>
+        <div class="footer-col">
+            <h5>Navigate</h5>
+            <a href="#home">Home</a>
+            <a href="#services">Services</a>
+            <a href="#about">About Us</a>
+            <a href="userSignUp.html">Sign Up</a>
+        </div>
+        <div class="footer-col">
+            <h5>Contact</h5>
+            <p>123 Main Street</p>
+            <p>Phone: 01-xxxxxx</p>
+            <p>example123@gmail.com</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 HairDec Barber Shop. All rights reserved.</p>
+        <p>Crafted with care.</p>
+    </div>
+</footer>
+
+<script>
+// ── Navbar scroll
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// ── Scroll reveal
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.12 });
+revealEls.forEach(el => io.observe(el));
+
+// ── Scroll progress bar
+window.addEventListener('scroll', () => {
+    const scroll = window.scrollY;
+    const height = document.body.scrollHeight - window.innerHeight;
+    document.getElementById('progressBar').style.width =
+        (scroll / height) * 100 + '%';
+});
+
+// ── 3D tilt effect for cards
+document.querySelectorAll('.service-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const rotateX = (y / rect.height - 0.5) * 10;
+        const rotateY = (x / rect.width - 0.5) * -10;
+
+        card.style.transform =
+            `perspective(600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = `perspective(600px) rotateX(0) rotateY(0)`;
+    });
+});
+</script>
+</body>
+</html>
